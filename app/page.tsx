@@ -81,6 +81,7 @@ export default function Home() {
               selectedValue={game.selectedValue as number | null}
               conflicts={game.conflicts}
               lastWrongCell={game.lastWrongCell}
+              useCustomKeyboard={game.useCustomKeyboard}
               gameStatus={game.gameStatus}
               selectedCellFixed={game.selectedCellFixed}
               setInputRef={game.setInputRef}

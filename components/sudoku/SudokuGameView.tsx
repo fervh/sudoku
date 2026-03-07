@@ -2,6 +2,7 @@ import { SudokuBoard } from "./SudokuBoard";
 import styles from "./sudoku.module.css";
 import type { Board, GameMode } from "./types";
 import type { KeyboardEvent } from "react";
+import { PiBroom } from "react-icons/pi";
 
 type SudokuGameViewProps = {
   board: Board;
@@ -12,6 +13,7 @@ type SudokuGameViewProps = {
   selectedValue: number | null;
   conflicts: Set<string>;
   lastWrongCell: string | null;
+  useCustomKeyboard: boolean;
   gameStatus: "playing" | "solved" | "failed";
   selectedCellFixed: boolean;
   setInputRef: (row: number, col: number, node: HTMLInputElement | null) => void;
@@ -33,6 +35,7 @@ export function SudokuGameView({
   selectedValue,
   conflicts,
   lastWrongCell,
+  useCustomKeyboard,
   gameStatus,
   selectedCellFixed,
   setInputRef,
@@ -45,7 +48,7 @@ export function SudokuGameView({
   onReveal
 }: SudokuGameViewProps) {
   return (
-    <div className={styles.gamePanel}>
+    <div className={useCustomKeyboard ? `${styles.gamePanel} ${styles.gamePanelCustom}` : styles.gamePanel}>
       <SudokuBoard
         board={board}
         puzzle={puzzle}
@@ -54,11 +57,38 @@ export function SudokuGameView({
         selectedValue={selectedValue}
         conflicts={conflicts}
         lastWrongCell={lastWrongCell}
+        useCustomKeyboard={useCustomKeyboard}
         onSelectCell={onSelectCell}
         onChangeCell={onCellChange}
         onCellKeyDown={onCellKeyDown}
         setInputRef={setInputRef}
       />
+
+      {useCustomKeyboard ? (
+        <div className={styles.numpad} aria-label="Number pad">
+          {Array.from({ length: 9 }, (_, index) => index + 1).map((digit) => (
+            <button
+              key={digit}
+              type="button"
+              className={styles.numKey}
+              onClick={() => onNumpad(digit)}
+              disabled={!selectedCell || selectedCellFixed || gameStatus !== "playing"}
+            >
+              {digit}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className={styles.numKey}
+            onClick={() => onNumpad(null)}
+            disabled={!selectedCell || selectedCellFixed || gameStatus !== "playing"}
+            aria-label="Clear cell"
+          >
+            <PiBroom aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
 
       <div className={styles.actions}>
         <button type="button" className={`${styles.button} ${styles.secondaryButton}`} onClick={onReset}>
@@ -74,29 +104,6 @@ export function SudokuGameView({
           disabled={mode === "challenge"}
         >
           Reveal
-        </button>
-      </div>
-
-      <div className={styles.numpad} aria-label="Number pad">
-        {Array.from({ length: 9 }, (_, index) => index + 1).map((digit) => (
-          <button
-            key={digit}
-            type="button"
-            className={styles.numKey}
-            onClick={() => onNumpad(digit)}
-            disabled={!selectedCell || selectedCellFixed || gameStatus !== "playing"}
-          >
-            {digit}
-          </button>
-        ))}
-
-        <button
-          type="button"
-          className={`${styles.numKey} ${styles.clearKey}`}
-          onClick={() => onNumpad(null)}
-          disabled={!selectedCell || selectedCellFixed || gameStatus !== "playing"}
-        >
-          Clear
         </button>
       </div>
     </div>

@@ -28,6 +28,7 @@ export function useSudokuGame() {
   const [gameStatus, setGameStatus] = useState<GameStatus>("playing");
   const [lastWrongCell, setLastWrongCell] = useState<string | null>(null);
   const [strikePulse, setStrikePulse] = useState(false);
+  const [useCustomKeyboard, setUseCustomKeyboard] = useState(false);
 
   const inputRefs = useRef<(HTMLInputElement | null)[][]>(
     Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => null))
@@ -78,6 +79,23 @@ export function useSudokuGame() {
     },
     []
   );
+
+  useEffect(() => {
+    const media = window.matchMedia("(pointer: coarse), (max-width: 820px)");
+    const update = () => {
+      const hasTouch = navigator.maxTouchPoints > 0 || "ontouchstart" in window;
+      setUseCustomKeyboard(media.matches || hasTouch);
+    };
+    update();
+
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", update);
+      return () => media.removeEventListener("change", update);
+    }
+
+    media.addListener(update);
+    return () => media.removeListener(update);
+  }, []);
 
   useEffect(() => {
     if (boardEqualsSolution(board, game.solution)) {
@@ -242,6 +260,7 @@ export function useSudokuGame() {
     statusText,
     statusClass,
     strikePulse,
+    useCustomKeyboard,
     selectedCell,
     selectedCoords,
     selectedValue,

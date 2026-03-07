@@ -10,6 +10,7 @@ type SudokuBoardProps = {
   selectedValue: number | null;
   conflicts: Set<string>;
   lastWrongCell: string | null;
+  useCustomKeyboard: boolean;
   onSelectCell: (key: string) => void;
   onChangeCell: (row: number, col: number, value: string) => void;
   onCellKeyDown: (event: KeyboardEvent<HTMLInputElement>, row: number, col: number) => void;
@@ -24,13 +25,14 @@ export function SudokuBoard({
   selectedValue,
   conflicts,
   lastWrongCell,
+  useCustomKeyboard,
   onSelectCell,
   onChangeCell,
   onCellKeyDown,
   setInputRef
 }: SudokuBoardProps) {
   return (
-    <div className={styles.boardShell}>
+    <div className={useCustomKeyboard ? `${styles.boardShell} ${styles.customKeyboard}` : styles.boardShell}>
       <div className={styles.board} role="grid" aria-label="Sudoku board">
         {board.map((row, r) =>
           row.map((value, c) => {
@@ -68,15 +70,39 @@ export function SudokuBoard({
                 ]
                   .filter(Boolean)
                   .join(" ")}
+                onPointerDown={(event) => {
+                  if (useCustomKeyboard) {
+                    event.preventDefault();
+                    onSelectCell(key);
+                  }
+                }}
               >
                 <input
                   ref={(node) => setInputRef(r, c, node)}
                   aria-label={`Row ${r + 1} column ${c + 1}`}
                   aria-invalid={conflict}
-                  inputMode="numeric"
+                  inputMode={useCustomKeyboard ? "none" : "numeric"}
                   maxLength={1}
-                  readOnly={isFixed}
+                  readOnly={isFixed || useCustomKeyboard}
                   value={value ?? ""}
+                  onMouseDown={(event) => {
+                    if (useCustomKeyboard) {
+                      event.preventDefault();
+                      onSelectCell(key);
+                    }
+                  }}
+                  onTouchStart={(event) => {
+                    if (useCustomKeyboard) {
+                      event.preventDefault();
+                      onSelectCell(key);
+                    }
+                  }}
+                  onPointerDown={(event) => {
+                    if (useCustomKeyboard) {
+                      event.preventDefault();
+                      onSelectCell(key);
+                    }
+                  }}
                   onFocus={() => onSelectCell(key)}
                   onChange={(event) => onChangeCell(r, c, event.target.value)}
                   onKeyDown={(event) => onCellKeyDown(event, r, c)}

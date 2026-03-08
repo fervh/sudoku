@@ -1,6 +1,7 @@
 export type CellValue = number | null;
 export type Board = CellValue[][];
 export type SolvedBoard = number[][];
+export type NotesBoard = number[][][];
 
 export type Difficulty = "easy" | "medium" | "hard";
 export type GameMode = "practice" | "challenge";

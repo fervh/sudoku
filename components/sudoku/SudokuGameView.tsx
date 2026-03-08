@@ -1,11 +1,12 @@
 import { SudokuBoard } from "./SudokuBoard";
 import styles from "./sudoku.module.css";
-import type { Board, GameMode } from "./types";
+import type { Board, GameMode, NotesBoard } from "./types";
 import type { KeyboardEvent } from "react";
 import { PiBroom } from "react-icons/pi";
 
 type SudokuGameViewProps = {
   board: Board;
+  notesBoard: NotesBoard;
   puzzle: Board;
   mode: GameMode;
   selectedCell: string | null;
@@ -28,6 +29,7 @@ type SudokuGameViewProps = {
 
 export function SudokuGameView({
   board,
+  notesBoard,
   puzzle,
   mode,
   selectedCell,
@@ -51,6 +53,7 @@ export function SudokuGameView({
     <div className={useCustomKeyboard ? `${styles.gamePanel} ${styles.gamePanelCustom}` : styles.gamePanel}>
       <SudokuBoard
         board={board}
+        notesBoard={notesBoard}
         puzzle={puzzle}
         selectedCell={selectedCell}
         selectedCoords={selectedCoords}

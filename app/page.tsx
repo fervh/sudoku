@@ -9,6 +9,7 @@ import { useSudokuGame } from "@/components/sudoku/useSudokuGame";
 import styles from "@/components/sudoku/sudoku.module.css";
 import { CiCircleInfo, CiHeart } from "react-icons/ci";
 import { FaClock, FaHeart } from "react-icons/fa";
+import { MdOutlineEdit, MdOutlineEditOff } from "react-icons/md";
 
 export default function Home() {
   const game = useSudokuGame();
@@ -58,8 +59,23 @@ export default function Home() {
           ) : null}
 
           <section className={styles.card}>
-            <h1 className={styles.title}>Sudoku Studio</h1>
-            <p className={styles.subtitle}>Structured, clean, and focused gameplay.</p>
+            <div className={game.view === "game" ? `${styles.titleRow} ${styles.titleRowGame}` : styles.titleRow}>
+              <h1 className={styles.title}>Sudoku Studio</h1>
+              {game.view === "game" ? (
+                <button
+                  type="button"
+                  className={game.noteMode ? `${styles.noteModeToggle} ${styles.noteModeButtonActive}` : `${styles.noteModeToggle} ${styles.noteModeButton}`}
+                  onClick={game.toggleNoteMode}
+                  aria-pressed={game.noteMode}
+                >
+                  {game.noteMode ? <MdOutlineEdit aria-hidden="true" /> : <MdOutlineEditOff aria-hidden="true" />}
+                  <span>Notes {game.noteMode ? "On" : "Off"}</span>
+                </button>
+              ) : null}
+            </div>
+            <p className={game.view === "game" ? `${styles.subtitle} ${styles.subtitleGame}` : styles.subtitle}>
+              Structured, clean, and focused gameplay.
+            </p>
 
           {game.view === "menu" ? (
             <SudokuMenu
@@ -74,6 +90,7 @@ export default function Home() {
           {game.view === "game" ? (
             <SudokuGameView
               board={game.board}
+              notesBoard={game.notesBoard}
               puzzle={game.game.puzzle}
               mode={game.mode}
               selectedCell={game.selectedCell}

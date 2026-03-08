@@ -10,9 +10,12 @@ import {
   parseCellKey,
   toCellKey
 } from "./engine";
-import type { Board, CellValue, Difficulty, GameMode, GameStatus, SolvedBoard, ViewState } from "./types";
+import type { Board, CellValue, Difficulty, GameMode, GameStatus, NotesBoard, SolvedBoard, ViewState } from "./types";
 
 type GameData = { puzzle: Board; solution: SolvedBoard };
+
+const createEmptyNotesBoard = (): NotesBoard =>
+  Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => [] as number[]));
 
 export function useSudokuGame() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -22,6 +25,8 @@ export function useSudokuGame() {
   const [game, setGame] = useState<GameData>(() => createGame("easy"));
   const [board, setBoard] = useState<Board>(() => cloneBoard(game.puzzle));
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
+  const [notesBoard, setNotesBoard] = useState<NotesBoard>(() => createEmptyNotesBoard());
+  const [noteMode, setNoteMode] = useState(false);
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [strikes, setStrikes] = useState(0);
@@ -134,6 +139,8 @@ export function useSudokuGame() {
     setMode(nextMode);
     setGame(nextGame);
     setBoard(cloneBoard(nextGame.puzzle));
+    setNotesBoard(createEmptyNotesBoard());
+    setNoteMode(false);
     setElapsedSeconds(0);
     setStrikes(0);
     setGameStatus("playing");
@@ -149,6 +156,7 @@ export function useSudokuGame() {
   const resetCurrentGame = () => {
     const [startRow, startCol] = findFirstEditableCell(game.puzzle);
     setBoard(cloneBoard(game.puzzle));
+    setNotesBoard(createEmptyNotesBoard());
     setElapsedSeconds(0);
     setStrikes(0);
     setGameStatus("playing");
@@ -160,6 +168,8 @@ export function useSudokuGame() {
   const goToMenu = () => {
     setView("menu");
     setSelectedCell(null);
+    setNotesBoard(createEmptyNotesBoard());
+    setNoteMode(false);
     setGameStatus("playing");
     setLastWrongCell(null);
     setStrikePulse(false);
@@ -167,6 +177,33 @@ export function useSudokuGame() {
 
   const revealSolution = () => {
     setBoard(game.solution.map((row) => [...row]));
+    setNotesBoard(createEmptyNotesBoard());
+  };
+
+  const clearCellNotes = (row: number, col: number) => {
+    setNotesBoard((current) => {
+      if (current[row][col].length === 0) return current;
+      const next = current.map((line) => line.map((cellNotes) => [...cellNotes]));
+      next[row][col] = [];
+      return next;
+    });
+  };
+
+  const toggleCellNote = (row: number, col: number, digit: number) => {
+    if (game.puzzle[row][col] !== null || gameStatus !== "playing" || board[row][col] !== null) return;
+
+    setNotesBoard((current) => {
+      const next = current.map((line) => line.map((cellNotes) => [...cellNotes]));
+      const notes = next[row][col];
+      const index = notes.indexOf(digit);
+      if (index >= 0) {
+        notes.splice(index, 1);
+      } else {
+        notes.push(digit);
+        notes.sort((a, b) => a - b);
+      }
+      return next;
+    });
   };
 
   const updateCell = (row: number, col: number, value: CellValue) => {
@@ -190,6 +227,10 @@ export function useSudokuGame() {
       next[row][col] = value;
       return next;
     });
+
+    if (value !== null) {
+      clearCellNotes(row, col);
+    }
   };
 
   const handleCellChange = (row: number, col: number, rawValue: string) => {
@@ -200,6 +241,12 @@ export function useSudokuGame() {
     }
     const value = Number(trimmed);
     if (!Number.isInteger(value) || value < 1 || value > 9) return;
+
+    if (noteMode) {
+      toggleCellNote(row, col, value);
+      return;
+    }
+
     updateCell(row, col, value);
   };
 
@@ -237,7 +284,12 @@ export function useSudokuGame() {
     }
     if (/^[1-9]$/.test(event.key)) {
       event.preventDefault();
-      updateCell(row, col, Number(event.key));
+      const digit = Number(event.key);
+      if (noteMode) {
+        toggleCellNote(row, col, digit);
+        return;
+      }
+      updateCell(row, col, digit);
       moveSelection(row, col, 0, 1);
     }
   };
@@ -245,7 +297,20 @@ export function useSudokuGame() {
   const handleNumpad = (value: CellValue) => {
     if (!selectedCoords || selectedCellFixed) return;
     const [row, col] = selectedCoords;
+
+    if (noteMode) {
+      if (value === null) {
+        return;
+      }
+      toggleCellNote(row, col, value);
+      return;
+    }
+
     updateCell(row, col, value);
+  };
+
+  const toggleNoteMode = () => {
+    setNoteMode((current) => !current);
   };
 
   return {
@@ -253,6 +318,8 @@ export function useSudokuGame() {
     mode,
     view,
     board,
+    notesBoard,
+    noteMode,
     game,
     elapsedSeconds,
     strikesLeft,
@@ -274,6 +341,7 @@ export function useSudokuGame() {
     setDifficulty,
     setMode,
     setSelectedCell,
+    toggleNoteMode,
     setInputRef,
     handleCellChange,
     handleCellKeyDown,

@@ -1,9 +1,10 @@
 import styles from "./sudoku.module.css";
-import type { Board } from "./types";
+import type { Board, NotesBoard } from "./types";
 import type { KeyboardEvent } from "react";
 
 type SudokuBoardProps = {
   board: Board;
+  notesBoard: NotesBoard;
   puzzle: Board;
   selectedCell: string | null;
   selectedCoords: [number, number] | null;
@@ -19,6 +20,7 @@ type SudokuBoardProps = {
 
 export function SudokuBoard({
   board,
+  notesBoard,
   puzzle,
   selectedCell,
   selectedCoords,
@@ -51,6 +53,8 @@ export function SudokuBoard({
                 !selected
             );
             const sameValue = selectedValue !== null && value !== null && selectedValue === value && !selected;
+            const cellNotes = notesBoard[r][c];
+            const showNotes = !isFixed && value === null && cellNotes.length > 0;
 
             return (
               <label
@@ -77,6 +81,18 @@ export function SudokuBoard({
                   }
                 }}
               >
+                {showNotes ? (
+                  <span className={styles.noteGrid} aria-hidden="true">
+                    {Array.from({ length: 9 }, (_, index) => {
+                      const digit = index + 1;
+                      return (
+                        <span key={digit} className={cellNotes.includes(digit) ? styles.noteVisible : styles.noteHidden}>
+                          {digit}
+                        </span>
+                      );
+                    })}
+                  </span>
+                ) : null}
                 <input
                   ref={(node) => setInputRef(r, c, node)}
                   aria-label={`Row ${r + 1} column ${c + 1}`}

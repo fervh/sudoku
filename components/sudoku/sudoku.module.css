@@ -40,9 +40,26 @@
   color: #0f2d42;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.titleRowGame {
+  width: min(100%, 560px);
+  margin-inline: auto;
+}
+
 .subtitle {
   margin: 0.45rem 0 1rem;
   color: #4c6677;
+}
+
+.subtitleGame {
+  width: min(100%, 560px);
+  margin-inline: auto;
 }
 
 .licenseFooter {
@@ -161,11 +178,14 @@
 }
 
 .cell {
+  position: relative;
   border-right: 1px solid #a8bcc8;
   border-bottom: 1px solid #a8bcc8;
 }
 
 .cell input {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   border: 0;
@@ -180,6 +200,33 @@
   outline: none;
 }
 
+.noteGrid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-items: center;
+  padding: 0.16rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.noteGrid span {
+  font-size: clamp(0.44rem, 1.08vw, 0.6rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.noteVisible {
+  color: #2c6489;
+  opacity: 0.95;
+}
+
+.noteHidden {
+  opacity: 0;
+}
+
 .fixed input {
   font-weight: 700;
   color: #ef8a17;
@@ -191,6 +238,7 @@
 .selected input {
   background: #ffffff !important;
   box-shadow: inset 0 0 0 5px #3b8ed6 !important;
+  caret-color: transparent;
 }
 
 .peerRow input,
@@ -232,6 +280,7 @@
   background: #ffffff !important;
   background-color: #ffffff !important;
   box-shadow: inset 0 0 0 5px #3b8ed6 !important;
+  caret-color: transparent;
 }
 
 .conflict input {
@@ -423,6 +472,35 @@
   color: #f4fafc;
 }
 
+.noteModeButton {
+  background: #dcebfa;
+  color: #154b6d;
+}
+
+.noteModeButtonActive {
+  background: #3b8ed6;
+  color: #ffffff;
+}
+
+.noteModeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.55rem 0.78rem;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.noteModeToggle:focus-visible {
+  outline: 3px solid #85c6f9;
+  outline-offset: 2px;
+}
+
 .warningButton {
   background: #ef8a17;
   color: #271100;
@@ -532,6 +610,15 @@
     gap: 0.42rem;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .titleRow {
+    gap: 0.5rem;
+  }
+
+  .noteModeToggle {
+    padding: 0.48rem 0.62rem;
+    font-size: 0.74rem;
   }
 
   .button {

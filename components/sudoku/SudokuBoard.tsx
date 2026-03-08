@@ -71,9 +71,9 @@ export function SudokuBoard({
                   .filter(Boolean)
                   .join(" ")}
                 onPointerDown={(event) => {
+                  onSelectCell(key);
                   if (useCustomKeyboard) {
                     event.preventDefault();
-                    onSelectCell(key);
                   }
                 }}
               >

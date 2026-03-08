@@ -170,6 +170,9 @@
   height: 100%;
   border: 0;
   background: transparent;
+  background-color: transparent;
+  appearance: none;
+  -webkit-appearance: none;
   text-align: center;
   font-size: clamp(1.02rem, 2.35vw, 1.3rem);
   font-family: var(--font-sans), "Avenir Next", "Trebuchet MS", sans-serif;
@@ -180,29 +183,55 @@
 .fixed input {
   font-weight: 700;
   color: #ef8a17;
-  background: #e6f0f7 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none;
 }
 
 .selected input {
   background: #ffffff !important;
-  box-shadow: inset 0 0 0 3px #ef8a17;
+  box-shadow: inset 0 0 0 5px #3b8ed6 !important;
 }
 
 .peerRow input,
 .peerCol input,
 .peerBox input {
-  background: #ffefd9;
+  background: #edf6ff;
 }
 
 .fixed.peerRow input,
 .fixed.peerCol input,
 .fixed.peerBox input {
-  background: #e6f0f7 !important;
+  background: #edf6ff !important;
+  background-color: #edf6ff !important;
+  box-shadow: none !important;
 }
 
 .sameValue input {
-  background: #e7f4ff;
+  background: #dceeff;
   font-weight: 600;
+}
+
+.fixed.sameValue input {
+  background: #dceeff !important;
+  background-color: #dceeff !important;
+  box-shadow: none !important;
+  color: #0f4a6e;
+}
+
+.fixed.sameValue.peerRow input,
+.fixed.sameValue.peerCol input,
+.fixed.sameValue.peerBox input {
+  background: #dceeff !important;
+  background-color: #dceeff !important;
+  box-shadow: none !important;
+  color: #0f4a6e;
+}
+
+.fixed.selected input {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  box-shadow: inset 0 0 0 5px #3b8ed6 !important;
 }
 
 .conflict input {
